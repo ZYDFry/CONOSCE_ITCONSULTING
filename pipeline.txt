@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    stages {
+        // --- PASO 0: PREPARACIÓN ---
+        stage('Preparar Entorno') {
+            steps {
+                echo 'Instalando librerías necesarias...'
+                // Instalamos pandas y openpyxl una sola vez
+                bat '"C:\\Users\\ZYDF\\AppData\\Local\\Python\\bin\\python.exe" -m pip install pandas openpyxl'
+            }
+        }
+        
+        // --- PASO 1: LECTURA (EXTRACT) ---
+        stage('1. Extracción (READ)') {
+            steps {
+                echo 'Iniciando lectura de archivos Excel...'
+                // Solo ejecuta data_read.py
+                bat '"C:\\Users\\ZYDF\\AppData\\Local\\Python\\bin\\python.exe" data_read.py'
+            }
+        }
+            
+        // --- PASO 2: TRANSFORMACIÓN (TRANSFORM) ---
+        stage('2. Transformación (TRANSFORM)') {
+            steps {
+                echo 'Aplicando filtros y limpieza...'
+                // Solo ejecuta data_transform.py
+                bat '"C:\\Users\\ZYDF\\AppData\\Local\\Python\\bin\\python.exe" data_transform.py'
+            }
+        }
+
+        // --- PASO 3: CARGA / EXPORTACIÓN (LOAD) ---
+        stage('3. Exportación (LOAD)') {
+            steps {
+                echo 'Generando reporte Excel final...'
+                // Solo ejecuta data_export.py
+                bat '"C:\\Users\\ZYDF\\AppData\\Local\\Python\\bin\\python.exe" data_export.py'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "PIPELINE COMPLETADO. Revisa la carpeta 'Resultados'."
+        }
+        failure {
+            echo "FALLO. Mira arriba qué etapa (Stage) se puso roja."
+        }
+    }
+}
